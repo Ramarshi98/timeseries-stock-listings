@@ -3,6 +3,14 @@ import time
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pytz
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Retrieve the MongoDB URI from the environment variable
+MONGO_URI = os.getenv('MONGO_URI')
 
 # Mock function to simulate fetching stock price (you would replace this with an actual API call)
 def get_stock_price(symbol, previous_price):
@@ -76,8 +84,12 @@ def create_time_series_collection(db, symbol):
 
 # Function to insert data into MongoDB time series collection
 def insert_data_into_mongo(stock_data, symbol):
-    # Replace 'localhost' with the MongoDB server address if it's hosted remotely
-    client = MongoClient('mongodb+srv://main_user_pov:Password123@cluster1.gj7nm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1')
+    # Ensure the MONGO_URI is set in the .env file and is loaded
+    if not MONGO_URI:
+        raise ValueError("MongoDB URI not found in the environment variables.")
+    
+    # Connect to MongoDB using the URI from the environment variable
+    client = MongoClient(MONGO_URI)
     
     # Select the database (create it if it doesn't exist)
     db = client['mongoFi']
